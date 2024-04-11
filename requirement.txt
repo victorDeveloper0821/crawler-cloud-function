@@ -2,7 +2,6 @@
 functions-framework==3.*
 requests==2.20.0
 pymongo
-json
 datetime
 flask
 python-dotenv
