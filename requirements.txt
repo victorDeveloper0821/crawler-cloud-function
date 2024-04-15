@@ -1,6 +1,6 @@
 # python dependencies
 functions-framework==3.*
-requests==2.20.0
+requests==2.*
 pymongo
 datetime
 flask
