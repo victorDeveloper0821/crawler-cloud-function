@@ -44,8 +44,8 @@
 - [x] 定義爬蟲需求和目標網站
 - [x] 設計爬蟲架構
 - [x] 實現爬蟲邏輯
-- [ ] 集成 Google Cloud Functions
-- [ ] 設定 Google Cloud Scheduler 進行定時觸發
+- [x] 集成 Google Cloud Functions
+- [x] 設定 Google Cloud Scheduler 進行定時觸發
 - [ ] 測試爬蟲的穩定性和性能
 - [ ] 部署至生產環境
 - [ ] 監控和優化生產環境運行
