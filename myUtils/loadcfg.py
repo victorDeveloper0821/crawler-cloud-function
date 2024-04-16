@@ -1,13 +1,13 @@
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
 
 # 从 .env 文件加载环境变量
-load_dotenv()
+#load_dotenv()
 
 def get_config(key):
     """获取指定配置的值"""
-    return os.getenv(key)
+    return os.environ.get(key,'Key Not set')
 
 def getMongoClient():
     """ 取得 MongoDB 設定值 """

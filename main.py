@@ -8,22 +8,29 @@ Step4: Insert data to MongoDB (Stored in collection by date)
 """
 from datetime import datetime, timedelta
 import json 
-import requests
+import urllib.request
 from myUtils.loadcfg import getMongoClient
 
-def youBikeCrawler():
+def youBikeCrawler(request):
     youbike_url = 'https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json'
     collName='youbike_'+datetime.now().strftime("%y%m%d")
-    res = requests.get(youbike_url)
-    res.raise_for_status()
-    data = res.json()
-    print(data)
+    with urllib.request.urlopen(youbike_url) as response:
+    # 检查响应码是否为 HTTP 200 (OK)
+        if response.getcode() == 200:
+            # 读取响应体并解码为 UTF-8 字符串
+            response_body = response.read().decode('utf-8')
+            # 解析 JSON 数据
+            data = json.loads(response_body)
+        else:
+            # 如果响应码不是 200，抛出异常
+            raise Exception(f"HTTP Error: {response.getcode()} for {youbike_url}")
+
     client = getMongoClient()
     
     db = client['youbike']
     collection = db[collName]
     insertMany = collection.insert_many(documents=data)
-    if len(insertMany) == len(data):
+    if len(insertMany.inserted_ids) == len(data):
         return 'Successful'
     else: 
         return 'Error'
