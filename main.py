@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import json 
 import urllib.request
 from myUtils.loadcfg import getMongoClient
+from zoneinfo import ZoneInfo
 
 def youBikeCrawler(request):
     youbike_url = 'https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json'
@@ -29,11 +30,30 @@ def youBikeCrawler(request):
     
     db = client['youbike']
     collection = db[collName]
-    insertMany = collection.insert_many(documents=data)
+    insertMany = collection.insert_many(documents=convertData(data))
     if len(insertMany.inserted_ids) == len(data):
         return 'Successful'
     else: 
         return 'Error'
+    
+def convertData(datalist):
+    list = []
+    for data in datalist:
+        renamedData = {}
+        renamedData['station_no'] = data.pop('sno')
+        renamedData['station_name'] = data.pop('sna')
+        renamedData['district'] = data.pop('sarea')
+        renamedData['total'] = data.pop('tot')
+        renamedData['used'] = data.pop('sbi')
+        renamedData['empty'] = data.pop('bemp')
+        # with timezone in Taiwan
+        updateTime = data['srcUpdateTime'] + ' +08:00'
+        renamedData['updated_time'] = datetime.strptime(updateTime,'%Y-%m-%d %H:%M:%S %z')
+        renamedData['info_time'] = datetime.now(ZoneInfo('Asia/Taipei'))
+        list.append(renamedData)
+    return list
+
+
 
 if __name__ == '__main__':
     youBikeCrawler()
