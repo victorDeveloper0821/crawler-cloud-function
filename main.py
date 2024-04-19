@@ -13,6 +13,8 @@ from myUtils.loadcfg import getMongoClient
 from zoneinfo import ZoneInfo
 
 def youBikeCrawler(request):
+    """UBike 爬蟲主程式邏輯"""
+
     youbike_url = 'https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json'
     collName='youbike_'+datetime.now().strftime("%y%m%d")
     with urllib.request.urlopen(youbike_url) as response:
@@ -37,6 +39,7 @@ def youBikeCrawler(request):
         return 'Error'
     
 def convertData(datalist):
+    """轉換資料格式，去除 api 不必要欄位"""
     list = []
     for data in datalist:
         renamedData = {}
@@ -46,14 +49,13 @@ def convertData(datalist):
         renamedData['total'] = data.pop('tot')
         renamedData['used'] = data.pop('sbi')
         renamedData['empty'] = data.pop('bemp')
-        # with timezone in Taiwan
-        updateTime = data['srcUpdateTime'] + ' +08:00'
-        renamedData['updated_time'] = datetime.strptime(updateTime,'%Y-%m-%d %H:%M:%S %z')
-        renamedData['info_time'] = datetime.now(ZoneInfo('Asia/Taipei'))
+        renamedData['updated_time'] = data['srcUpdateTime']
+        renamedData['info_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         list.append(renamedData)
     return list
 
-
+def exportCSV():
+    """ 輸出前一日 MongoDB 資料至 CSV 並清除 collection"""
 
 if __name__ == '__main__':
     youBikeCrawler()
