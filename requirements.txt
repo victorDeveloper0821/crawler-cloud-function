@@ -5,3 +5,4 @@ datetime
 flask
 python-dotenv
 pytz
+google-cloud-storage==1.42.0
