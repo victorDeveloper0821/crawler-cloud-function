@@ -9,14 +9,13 @@ Step4: Insert data to MongoDB (Stored in collection by date)
 from datetime import datetime, timedelta
 import json 
 import urllib.request
-from myUtils.loadcfg import getMongoClient
-from zoneinfo import ZoneInfo
+from myUtils.MongoHelper import getMongoClient, getCollection
 
 def youBikeCrawler(request):
     """UBike 爬蟲主程式邏輯"""
 
     youbike_url = 'https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json'
-    collName='youbike_'+(datetime.now()+datetime.timedelta(hours=8)).strftime("%y%m%d")
+    collName=getCollection('youbike',False)
     with urllib.request.urlopen(youbike_url) as response:
     # 检查响应码是否为 HTTP 200 (OK)
         if response.getcode() == 200:
