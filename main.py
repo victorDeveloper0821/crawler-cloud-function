@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 import json 
 import urllib.request
 from myUtils.MongoHelper import getMongoClient, getCollection
+import pandas as pd
+from google.cloud import storage
 
 def youBikeCrawler(request):
     """UBike 爬蟲主程式邏輯"""
@@ -55,6 +57,30 @@ def convertData(datalist):
 
 def exportCSV():
     """ 輸出前一日 MongoDB 資料至 CSV 並清除 collection"""
+    colName = getCollection('youbike_',True)
+    client = getMongoClient()
+    # read from mongodb
+    db = client['youbike']
+    # get collections
+    bikeLog = db[colName]
+    # query results
+    cursors = bikeLog.find()
+    # create dataframe from mongodb 
+    bike_df = pd.json_normalize(cursors)
+    write_read('testBucket',colName+'.csv', bike_df)
+
+def write_read(bucket_name, blob_name, df):
+    """Write and read a blob from GCS using file-like IO"""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The ID of your new GCS object
+    # blob_name = "storage-object-name"
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_string(df.to_csv(), 'text/csv')
 
 if __name__ == '__main__':
     youBikeCrawler()
